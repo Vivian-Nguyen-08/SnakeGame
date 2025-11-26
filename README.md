@@ -17,5 +17,6 @@ QTrainer
 - Compute the MSE by measuring the difference between the Target Q-value and Predicted Q-value. 
 - Performs a backward pass and applies gradient descent to update model's weights. 
 
-
+## snake.py
+snake.py is used to run the actual snake game using pygame. The game is run locally by running snake.py and using the arrow keys to navigate the snake within the window and collect food. If the snake hits the edge of the window or runs into itself, the game ends and allows the user to restart using the arrow keys or quit entirely by pressing backspace.
 
