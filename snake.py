@@ -1,5 +1,6 @@
 import pygame
 import random
+import numpy as np
 
 # Color definitions
 black = (0, 0, 0) # Text color
@@ -12,6 +13,69 @@ WIDTH = 600
 HEIGHT = 400
 BLOCK_SIZE = 10
 FPS = 15 # Controls the speed of the snake
+
+# Get current state of the game for the RL agent
+def get_state(self):
+    head_x, head_y = self.snake[0]
+    dir_x, dir_y = self.direction
+
+    # Danger
+    danger_straight = self.is_collision((head_x + dir_x * BLOCK_SIZE, head_y + dir_y * BLOCK_SIZE))
+    danger_right = self.is_collision((head_x + dir_y * BLOCK_SIZE, head_y - dir_x * BLOCK_SIZE))
+    danger_left = self.is_collision((head_x - dir_y * BLOCK_SIZE, head_y + dir_x * BLOCK_SIZE))
+
+    # Food location
+    food_x, food_y, = self.food
+
+    food_left =  food_x < head_x
+    food_right = food_x > head_x
+    food_up = food_y < head_y
+    food_down = food_y > head_y
+
+    state = [
+        danger_left, danger_straight, danger_right,
+        dir_x == 1, dir_x == -1, dir_y == 1, dir_y == -1,
+        food_left, food_right, food_up, food_down
+    ]
+    return np.array(state, dtype=int)
+
+# Check if the given point collides with walls or the snake itself
+def is_collision(self, point):
+    head_x, head_y = point
+    # Check for wall collisions
+    if head_x < 0 or head_x >= WIDTH or head_y < 0 or head_y >= HEIGHT:
+        return True
+    # Check for self collisions
+    if point in self.snake[1:]:
+        return True
+    return False
+
+# Apply the action to change the snake's direction
+def apply_acction(self, action):
+    dir_x, dir_y = self.direction
+
+    if action == 0: # Straight
+        return
+    elif action == 1: # Right turn
+        self.direction = (dir_y, -dir_x)
+    elif action == 2: # Left turn
+        self.direction = (-dir_y, dir_x)
+
+# Take a step in the game based on the action
+def step(self, action):
+    self.apply_acction(action)
+    self.move_snake()
+
+    # Reward
+    reward = 0
+    if self.game_over:
+        reward = -10
+    elif self.snake[0] == self.food:
+        reward = 10
+    
+    next_state = self.get_state()
+    return next_state, reward, self.game_over, {}
+
 
 class SnakeGame:
     # Initialize pygame
