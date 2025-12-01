@@ -8,9 +8,9 @@ Open this folder in your prefered IDE
 
 Create Virtual Environment and do pip install -r requirements.txt 
 
-Run agent.py
+Run agent.py by...
 
-Go to agent.py file and click the run button 
+Going to the agent.py file and click the run button 
 
 OR do python agent.py in your terminal 
 
