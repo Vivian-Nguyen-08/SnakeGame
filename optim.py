@@ -60,3 +60,31 @@ class SGD(Optimizer):
             self.params[k] -= self.learning_rate * g
 
 
+class Adam(Optimizer):
+    """
+    Implements Adam optimization algorithm.
+    """
+    def __init__(self, params, learning_rate=1e-3, beta1=0.9, beta2=0.999, epsilon=1e-8):
+        self.params = params
+        self.learning_rate = learning_rate
+        self.beta1 = beta1
+        self.beta2 = beta2
+        self.epsilon = epsilon
+        self.m = {}
+        self.v = {}
+        self.t = 0
+        
+        for k, param in self.params.items():
+            self.m[k] = np.zeros_like(param)
+            self.v[k] = np.zeros_like(param)
+
+    def step(self, grads):
+        self.t += 1
+        for k, g in grads.items():
+            self.m[k] = self.beta1 * self.m[k] + (1 - self.beta1) * g
+            self.v[k] = self.beta2 * self.v[k] + (1 - self.beta2) * (g ** 2)
+            
+            m_hat = self.m[k] / (1 - self.beta1 ** self.t)
+            v_hat = self.v[k] / (1 - self.beta2 ** self.t)
+            
+            self.params[k] -= self.learning_rate * m_hat / (np.sqrt(v_hat) + self.epsilon)
